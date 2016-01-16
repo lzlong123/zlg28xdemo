@@ -1,0 +1,232 @@
+﻿<!DOCTYPE html>
+<!-- saved from url=(0104)http://samples.msdn.microsoft.com/Workshop/samples/css/transforms_transitions_animations/transform4.html -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=GBK">
+    <title>zlg28xdemoBall</title>
+    <link rel="stylesheet" type="text/css" href="basestyles.css" />
+    <script src="jquery-1.11.3.min.js"></script>
+    <script src="rotate.js"></script>
+    <style media="screen" type="text/css">
+    </style>
+</head>
+
+
+<body>
+
+    <div class="Container" onmousemove="mouseMove(event)" onmousedown="onMouseDown()" onmouseup="onMouseUp()">
+        <div id="outer" class="Center myPerspective">
+
+        </div>
+    </div>
+
+    <div id="p1" class="text1" onclick="left()">Hello! Welcome to zlg28x's Demo Ball!</div>
+
+    <div id="p2" class="text2" onclick="right()">Click the picture you want.</div>
+
+
+
+    <script type="text/javascript">
+        var clickCounter = 0, Counter = 0, lastx = 0, lasty = 0, mouseState = "up";
+        var radius = 500,cbCounter=0,transitionState="idle";
+        var t;
+        Counter = Math.round(Math.random() * 1000);
+        var sphere = new sphereContainer(100, radius / 2);
+        annimate();
+        randomRotate();
+        callBackRotate();
+        function onMouseDown()
+        {
+            mouseState = "down";
+        }
+        function onMouseUp()
+        {
+            mouseState = "up";
+        }
+        function mouseMove(e)
+        {
+            deltax = lastx - e.screenX;
+            deltay = lasty - e.screenY;
+            lastx = e.screenX;
+            lasty = e.screenY;
+            if (mouseState == "down")
+            rotateSphere(sphere, Math.PI / 1000 * deltay, Math.PI / 1000 * deltax, 0, 0);
+            //callBackRotate();
+        }
+        function touchMove(e) {
+            deltax = lastx - e.screenX;
+            deltay = lasty - e.screenY;
+            lastx = e.screenX;
+            lasty = e.screenY;
+            if (mouseState == "down")
+                rotateSphere(sphere, Math.PI / 1000 * deltay, Math.PI / 1000 * deltax, 0, 0);
+            //callBackRotate();
+        }
+        var lastid = 0;
+        function onImgClick(obj)
+        {
+            clickCounter++;
+            //document.getElementById("p1").innerHTML = "click:" + clickCounter + " x: " + obj.id;
+            var id = parseInt(obj.id);
+            if (sphere.Vectors[id].z < 0)
+                return;
+            if (id == lastid || sphere.Vectors[0].R == radius / 2) {
+                if(sphere.Vectors[0].R == radius/2)
+                {
+                    for (var i = 0; i < sphere.child.length; i++) {
+                        sphere.Vectors[i].R = radius;
+                        sphere.child[i].css({ "width": "100px", "height": "100px", "left": "-50px", "top": "-50" });
+                    }
+                    sphere.child[id].css({ "width": "200px", "height": "200px", "left": "-100px", "top": "-100" });
+                    sphere.Vectors[id].R = radius * 1.5;
+                }
+                else
+                {
+                    for (var i = 0; i < sphere.child.length; i++) {
+                        sphere.Vectors[i].R = radius / 2;
+                        sphere.child[i].css({ "width": "60px", "height": "60px", "left": "-30px", "top": "-30" });
+                    }
+                }
+            }
+            else {
+                for (var i = 0; i < sphere.child.length; i++) {
+                    sphere.Vectors[i].R = radius;
+                    sphere.child[i].css({ "width": "100px", "height": "100px", "left": "-50px", "top": "-50" });
+                }
+                sphere.child[id].css({ "width": "200px", "height": "200px", "left": "-100px", "top": "-100" });
+                sphere.Vectors[id].R = radius * 1.5;
+            }
+            rotate2Origin(sphere.Vectors[id]);
+            callBackRotate()
+            sphere.child[id].css("z-index", "2000");
+            lastid = id;
+        }
+        function annimate()
+        {
+            //randomRotate();
+            //xyzRotate(25, 25, 0);
+            check();
+            t = setTimeout("annimate()", 1000);
+        }
+        function check()
+        {
+            var uri = 'api/rotations';
+            $.getJSON(uri)
+              .done(function (data) {
+                  xyzRotate(data[0].X,data[0].Y,data[0].Z);
+                  if (data[0].State == "OFF") {
+                      document.getElementById("p2").innerHTML = "Mx280 is offline, please power on it and run the demo program."
+                  }
+                  else {
+                      document.getElementById("p2").innerHTML = "Congratulation! It's working.";
+                  }
+              });
+        }
+        function left()
+        {
+            var uri = 'api/rotations/1';
+            $.getJSON(uri)
+        }
+        function right() {
+            var uri = 'api/rotations/2';
+            $.getJSON(uri)
+        }
+        function randomRotate()
+        {
+            var dxa = Math.round((0.1 + Math.sin(2 * Math.PI / 73 * Counter)) * 1000) / 9000;
+            var dya = Math.round((0.1 + Math.sin(2 * Math.PI / 97 * Counter)) * 1000) / 9000;
+            var dza = Math.round((0.1 + Math.sin(2 * Math.PI / 57 * Counter)) * 1000) / 9000;
+            //document.getElementById("p1").innerHTML = "Counter:" + Counter + " x:" + dxa + " y:" + dya + " z:" + dza;
+            rotateSphere(sphere, dxa, dya, dza, 0);
+            Counter+=6;
+        }
+        function xyzRotate(x,y,z)
+        {
+            rotateSphere(sphere, Math.PI * x / 180, Math.PI * y / 180, Math.PI * z / 180, 0);
+            callBackRotate();
+        }
+        function rotate2Origin(v)
+        {
+            var pv = new Vector.toPolar(v);
+            //document.getElementById("p2").innerHTML = str;
+            //document.getElementById("p2").innerHTML = "phi:" + pv.phi + " theta: " + pv.theta;
+            //rotateSphere(sphere, 0.25, 0.0, 0, 0);
+            //rotateSphere(sphere, 0.25, 0.0, 0, 0);
+            rotateSphere(sphere, 0, 0, pv.phi, 0);
+            rotateSphere(sphere, pv.theta, 0, 0, 0);
+        }
+
+
+
+        function callBackRotate() {
+            //document.getElementById("p2").innerHTML = "cbCounter :" + cbCounter;
+            for (var i = 0; i < sphere.child.length; i++)
+            {
+                rotateAndTranslate(sphere.child[i], sphere.Vectors[i].x, sphere.Vectors[i].y, sphere.Vectors[i].z, 0, 0, sphere.Vectors[i].R);
+            }
+            cbCounter++;
+        }
+        function rotateSphere(sphere, dXangle, dYangle, dZangle, dR) {
+            for (var i = 0; i < sphere.child.length; i++) {
+                var v1 = Vector.rotateAxis(sphere.Vectors[i],dXangle,"X");
+                var v2 = Vector.rotateAxis(v1, dYangle, "Y");
+                var v3 = Vector.rotateAxis(v2, dZangle, "Z");
+                sphere.Vectors[i].R += dR;
+                sphere.Vectors[i].x = v3.x;
+                sphere.Vectors[i].y = v3.y;
+                sphere.Vectors[i].z = v3.z;
+                sphere.child[i].css("z-index", "" + Math.ceil(v3.z * 1000 * v3.R/radius));
+                //sphere.child[i].attr("src", "kitty/" + pad(i, 3) + ".jpg");
+                //childdiv.attr("src", "kitty/" + pad(total, 3) + ".jpg");
+                //rotateAndTranslate(sphere.child[i], v3.x, v3.y, v3.z, 0, 0, sphere.Vectors[i].R);
+            }
+        }
+        //alert(pad(0, 2));
+        function pad(num, n) {
+            var i, j, str = "";
+            for (i = n; i >= 0; i--) {
+                j = Math.floor(Math.pow(10, i));
+                str += Math.floor(num / j);
+                num = num % j;
+            }
+            return str;
+        }
+        function sphereContainer(polarN, R) {
+            var outer = $("#outer");
+            this.child = new Array();
+            this.Vectors = new Array();
+            var n = Math.ceil(Math.sqrt((polarN - 2) / 4));
+            var thetaStep = 0.5 * Math.PI / n;
+            var theta = 0;
+            var total = 0;
+            for (var i = 0 - n; i< n + 1; i++) {
+                subPolarN = (n - Math.abs(i)) * 4;
+                if (subPolarN == 0)
+                    subPolarN = 1;
+                phiStep = 2 * Math.PI / subPolarN;
+                for (var phi = 0; phi < 2 * Math.PI; phi += phiStep) {
+                    var x = Math.sin(theta) * Math.cos(phi);
+                    var z = Math.sin(theta) * Math.sin(phi);
+                    var y = Math.cos(theta);
+                    var v = new Vector(x, y, z);
+                    v.R = R;
+                    var childdiv = $('<img class="Picture" onclick="onImgClick(this)" />');
+                    //childdiv.attr("src", "demoimg/" + pad(total, 2) + ".jpg");
+                    childdiv.attr("src", "demoimg/" + pad(0, 2) + ".jpg");
+                    childdiv.css("z-index", "" + Math.ceil(z * 1000));
+                    childdiv.css({ "width": "60px", "height": "60px", "left": "-30px", "top": "-30" });
+                    childdiv.attr('id', '' + total);
+                    childdiv.appendTo(outer);
+                    rotateAndTranslate(childdiv, x, y, z, 0, 0, R);
+                    this.Vectors.push(v);
+                    this.child.push(childdiv);
+                    total++;
+                }
+                theta += thetaStep;
+            }
+            document.getElementById("1").addEventListener("transitionend", callBackRotate);
+            return this;
+        }
+    </script>
+</body>
+</html>
