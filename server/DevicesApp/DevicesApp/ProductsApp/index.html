@@ -1,0 +1,92 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Product App</title>
+</head>
+<body>
+
+    <div>
+        <h2>Toggle</h2>
+        <input type="button" value="buzzer" onclick="buzzer();" />
+        <input type="button" value="led" onclick="led();" />
+        <!--<input type="button" value="mx280" onclick="mx280();" />-->
+        <p id="product">on</p>
+    </div>
+    <div>
+        <h2>Device States</h2>
+        <p id="buzzertext">buzzer:OFF</p>
+        <p id="ledtext">led:OFF</p>
+        <p id="mx280text">mx280:OFF</p>
+        <p id="mx280content"></p>
+
+
+        <ul id="products" />
+    </div>
+    <!--
+        <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.0.3.min.js"></script>
+        -->
+    <script src="jquery-1.11.3.min.js"></script>
+    <script>
+        var uri = 'api/devices';
+    check();
+    checkPeriodical();
+
+    function checkPeriodical()
+    {
+        check();
+        setTimeout("checkPeriodical()", 500);
+    }
+
+    function check()
+    {
+        $('#products').text("");
+        var uri = 'api/devices';
+        $.getJSON(uri)
+          .done(function (data) {
+              document.getElementById("buzzertext").innerHTML = "Buzzer:" + data[0].State ;
+              document.getElementById("ledtext").innerHTML = "Led:" + data[1].State
+              document.getElementById("mx280text").innerHTML = "Mx280:" + data[2].State;
+              if(data[2].State=="OFF")
+              {
+                  document.getElementById("mx280content").innerHTML = "Mx280 is offline, please power on it and run the demo program."
+              }
+              else
+              {
+                  document.getElementById("mx280content").innerHTML = "Congratulation! It's working.";
+              }
+          });
+    }
+
+    function formatItem(item) {
+      return item.Name + ': '+ item.State;
+    }
+
+    function findid(idx) {
+        var id = idx;
+        $.getJSON(uri + '/' + id)
+            .done(function (data) {
+                $('#product').text(formatItem(data));
+            })
+            .fail(function (jqXHR, textStatus, err) {
+                $('#product').text('Error: ' + err);
+            });
+        check();
+    }
+
+    function buzzer()
+    {
+        findid(1);
+    }
+
+    function led()
+    {
+        findid(2);
+    }
+    
+    function mx280() {
+        findid(3);
+    }
+
+    </script>
+</body>
+</html>

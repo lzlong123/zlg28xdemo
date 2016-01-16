@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<parameters>
+  <parameter name="IIS Web Application Name" description="" value="zlg28xdemo" tags="IisApp">
+    <parameterEntry kind="ProviderPath" scope="IisApp" match="^C:\\Users\\acer\\Desktop\\技术笔记\\微软云服务与开发板的应用指南\\ProductsApp\\ProductsApp\\obj\\Release\\Package\\PackageTmp$" />
+    <parameterEntry kind="ProviderPath" scope="setAcl" match="^C:\\Users\\acer\\Desktop\\技术笔记\\微软云服务与开发板的应用指南\\ProductsApp\\ProductsApp\\obj\\Release\\Package\\PackageTmp$" />
+  </parameter>
+</parameters>

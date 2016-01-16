@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<sitemanifest>
+  <IisApp path="C:\Users\acer\Desktop\技术笔记\微软云服务与开发板的应用指南\ProductsApp\ProductsApp\obj\Release\Package\PackageTmp" />
+  <setAcl path="C:\Users\acer\Desktop\技术笔记\微软云服务与开发板的应用指南\ProductsApp\ProductsApp\obj\Release\Package\PackageTmp" setAclResourceType="Directory" />
+  <setAcl path="C:\Users\acer\Desktop\技术笔记\微软云服务与开发板的应用指南\ProductsApp\ProductsApp\obj\Release\Package\PackageTmp" setAclUser="anonymousAuthenticationUser" setAclResourceType="Directory" />
+</sitemanifest>
