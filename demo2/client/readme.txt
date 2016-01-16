@@ -1,0 +1,1 @@
+若要使用自己的郁闷，请把cloudcontrol.c文件里的zlg28xdemoball替换成你要设置的微软云子域名。
